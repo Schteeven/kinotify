@@ -2,12 +2,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 import os
+from csv import reader
 
 # TODO: write your letterboxd credentials here
 username = ""
 password = ""
 
-#
 def get_lb_watchlist(username_text, password_text):
     driver = webdriver.Chrome()
 
@@ -37,6 +37,7 @@ def get_lb_watchlist(username_text, password_text):
     driver.execute_cdp_cmd("Page.setDownloadBehavior", params)
 
     driver.get(watchlist + "/export")
+    time.sleep(5)
 
 
 def newest(path):
@@ -45,13 +46,24 @@ def newest(path):
     return max(paths, key=os.path.getctime)
 
 
-get_lb_watchlist(username, password)
+def format_watchlist(filename):
+    
+    films_in_watchlist = set()
 
-file = newest(os.getcwd() + "/watchlist")
-print(file)
+    with open(filename) as csv_file:
+        csv_reader = reader(csv_file)
+        for row in csv_reader:
+            films_in_watchlist.add((row[1], row[2]))
+
+    return films_in_watchlist
+
+
+get_lb_watchlist(username, password)
+watchlist = format_watchlist(newest(os.getcwd() + "/watchlist"))
+
+    
 
 # throwaway csfd credentials in order to use english language
 username = 'throwaway666'
 password = "7@L9*96HBx%u#I49"
 
-time.sleep(10)
