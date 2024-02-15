@@ -40,17 +40,16 @@ def get_lb_watchlist(username_text, password_text):
     time.sleep(5)
 
 
-def newest(path):
-    files = os.listdir(path)
-    paths = [os.path.join(path, basename) for basename in files]
-    return max(paths, key=os.path.getctime)
+def choose_file(path):
+    for file in os.listdir(path):
+        if file.startswith("watchlist"):
+            return file
 
 
-def format_watchlist(filename):
-    
+def format_watchlist(filename):  
     films_in_watchlist = set()
 
-    with open(filename) as csv_file:
+    with open(os.getcwd() + "/watchlist/" + filename) as csv_file:
         csv_reader = reader(csv_file)
         for row in csv_reader:
             films_in_watchlist.add((row[1], row[2]))
@@ -58,8 +57,14 @@ def format_watchlist(filename):
     return films_in_watchlist
 
 
+def delete_downloaded_files():
+    os.system('rm -rf watchlist/*')
+
+
 get_lb_watchlist(username, password)
-watchlist = format_watchlist(newest(os.getcwd() + "/watchlist"))
+watchlist = format_watchlist(choose_file(os.getcwd() + "/watchlist"))
+print(watchlist)
+delete_downloaded_files()
 
     
 
