@@ -4,6 +4,9 @@ import time
 import os
 from csv import reader
 from html.parser import HTMLParser
+from email.message import EmailMessage
+import ssl
+import smtplib
 
 
 # TODO: write your email and letterboxd credentials in 
@@ -110,6 +113,7 @@ def scrape_cinemas():
     password.send_keys(csfd_password)
     time.sleep(1)
     driver.find_element(By.XPATH, "//button[@name='send']").click()
+    time.sleep(5)
     driver.get("https://www.csfd.cz/kino/?district=55&period=month")
     
     spalicek = get_schedule("//section[@id='cinema-10']")
@@ -136,7 +140,7 @@ def choose_films_to_see(watchlist, in_cinemas):
     for cinema, schedule in in_cinemas:
         to_see_in_cinemas.append("\n\n")
         to_see_in_cinemas.append(cinema)
-        to_see_in_cinemas.append(":\n")
+        to_see_in_cinemas.append(":")
 
         last_date = ""
 
@@ -155,11 +159,26 @@ def choose_films_to_see(watchlist, in_cinemas):
     return to_see_in_cinemas
 
 
+def send_email(email_text):
+    sender = os.environ.get("EMAIL")
+    password = os.environ.get("EMAIL_PASSWORD")
+
+    em = EmailMessage()
+    em['From'] = sender
+    em['To'] = sender
+    em['Subject'] = "Your watchlist in cinemas"
+    em.set_content(email_text)
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as smtp:
+        smtp.login(sender, password)
+        smtp.sendmail(sender, sender, em.as_string())
+
+
 get_lb_watchlist(os.environ.get("LETTERBOXD_LOGIN"), os.environ.get("LETTERBOXD_PASSWORD"))
 watchlist = format_watchlist(choose_file(os.getcwd() + "/watchlist"))
 delete_downloaded_files()
 in_cinemas = scrape_cinemas()
 to_see_in_cinemas = choose_films_to_see(watchlist, in_cinemas)
-email_text = "".join(to_see_in_cinemas)
-print(email_text)
-
+send_email("".join(to_see_in_cinemas))
