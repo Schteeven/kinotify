@@ -6,9 +6,9 @@ from csv import reader
 from html.parser import HTMLParser
 
 
-# TODO: write your letterboxd credentials here
-username = ""
-password = ""
+# TODO: write your email and letterboxd credentials in 
+#       os enviroment variables named EMAIL, EMAIL_PASSWORD
+#       LETTERBOXD_LOGIN and LETTERBOXD_PASSWORD or hardcode them yourselves
 
 driver = webdriver.Chrome()
 
@@ -110,7 +110,6 @@ def scrape_cinemas():
     password.send_keys(csfd_password)
     time.sleep(1)
     driver.find_element(By.XPATH, "//button[@name='send']").click()
-    time.sleep(1)
     driver.get("https://www.csfd.cz/kino/?district=55&period=month")
     
     spalicek = get_schedule("//section[@id='cinema-10']")
@@ -156,10 +155,11 @@ def choose_films_to_see(watchlist, in_cinemas):
     return to_see_in_cinemas
 
 
-get_lb_watchlist(username, password)
+get_lb_watchlist(os.environ.get("LETTERBOXD_LOGIN"), os.environ.get("LETTERBOXD_PASSWORD"))
 watchlist = format_watchlist(choose_file(os.getcwd() + "/watchlist"))
 delete_downloaded_files()
 in_cinemas = scrape_cinemas()
 to_see_in_cinemas = choose_films_to_see(watchlist, in_cinemas)
 email_text = "".join(to_see_in_cinemas)
+print(email_text)
 
