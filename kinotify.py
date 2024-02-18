@@ -110,6 +110,7 @@ def scrape_cinemas():
     password.send_keys(csfd_password)
     time.sleep(1)
     driver.find_element(By.XPATH, "//button[@name='send']").click()
+    time.sleep(1)
     driver.get("https://www.csfd.cz/kino/?district=55&period=month")
     
     spalicek = get_schedule("//section[@id='cinema-10']")
@@ -130,8 +131,35 @@ def get_schedule(cinema_elem):
     return cinema_name, cinema_schedule
 
 
+def choose_films_to_see(watchlist, in_cinemas):
+    to_see_in_cinemas = []
+
+    for cinema, schedule in in_cinemas:
+        to_see_in_cinemas.append("\n\n")
+        to_see_in_cinemas.append(cinema)
+        to_see_in_cinemas.append(":\n")
+
+        last_date = ""
+
+        for date, name, time in schedule:
+            if name in watchlist:
+                if date != last_date:
+                    last_date = date
+                    to_see_in_cinemas.append("\n")
+                    to_see_in_cinemas.append(last_date)
+                    to_see_in_cinemas.append(":\n")
+                to_see_in_cinemas.append("    ")
+                to_see_in_cinemas.append(time)
+                to_see_in_cinemas.append("  ")
+                to_see_in_cinemas.append(name)
+                to_see_in_cinemas.append("\n")
+    return to_see_in_cinemas
+
+
 get_lb_watchlist(username, password)
 watchlist = format_watchlist(choose_file(os.getcwd() + "/watchlist"))
 delete_downloaded_files()
 in_cinemas = scrape_cinemas()
+to_see_in_cinemas = choose_films_to_see(watchlist, in_cinemas)
+email_text = "".join(to_see_in_cinemas)
 
