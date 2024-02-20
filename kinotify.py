@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 import time
 import os
 from csv import reader
@@ -13,7 +14,9 @@ import smtplib
 #       os enviroment variables named EMAIL, EMAIL_PASSWORD
 #       LETTERBOXD_LOGIN and LETTERBOXD_PASSWORD or hardcode them yourselves
 
-driver = webdriver.Chrome()
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+driver = webdriver.Chrome(options=chrome_options)
 
 
 class ScheduleHMTLParser(HTMLParser):
@@ -106,7 +109,8 @@ def scrape_cinemas():
     csfd_password = "7@L9*96HBx%u#I49"
 
     driver.get("https://www.csfd.cz/prihlaseni/")
-    driver.find_element(By.XPATH, "//button[@id='didomi-notice-agree-button']").click()
+    # only use when --headless option removes
+    # driver.find_element(By.XPATH, "//button[@id='didomi-notice-agree-button']").click()
     username = driver.find_element(By.XPATH, "//input[@name='username']")
     password = driver.find_element(By.XPATH, "//input[@name='password']")
     username.send_keys(csfd_username)
