@@ -1,0 +1,14 @@
+This script scrapes cinema schedules in Brno (where I go, feel free to change them) from csfd and sends you email with screenings that match your letterboxd watchlist.
+Start the script by simple 'python3 path/to/script/kinotify.py' after setting all enviroment variables or hardcoding them yourself.
+Intended use however adds setting a cronetab (more on cronetab here: https://man7.org/linux/man-pages/man5/crontab.5.html) for automatic emailing.
+Crontab must however act as bash.
+
+Example crontab, that send email every day at midnight:
+
+#!/bin/bash -l
+EMAIL='name@service.com'
+EMAIL_PASSWORD='this_is_a_password'
+LETTERBOXD_LOGIN='cool_username'
+LETTERBOXD_PASSWORD='this_is_another_password'
+00 00 * * * /usr/bin/python3 /path/to/script/kinotify.py
+
