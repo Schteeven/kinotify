@@ -109,7 +109,7 @@ def scrape_cinemas():
     csfd_password = "7@L9*96HBx%u#I49"
 
     driver.get("https://www.csfd.cz/prihlaseni/")
-    # only use when --headless option removes
+    # only use when --headless option removed
     # driver.find_element(By.XPATH, "//button[@id='didomi-notice-agree-button']").click()
     username = driver.find_element(By.XPATH, "//input[@name='username']")
     password = driver.find_element(By.XPATH, "//input[@name='password']")
